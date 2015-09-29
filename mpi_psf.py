@@ -59,6 +59,9 @@ class PSFProcess(MPIProcess):
 
     def master_setup(self):
         #connect to database
+        self.options = py3shape.options.Options()
+        self.options.read()
+        self.options.read(args["ini"])
         self.connection = desnerscdb.connect()
         self.meds_list = args['list']
 
