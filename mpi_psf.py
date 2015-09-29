@@ -69,34 +69,7 @@ class PSFProcess(MPIProcess):
         self.filename = ""
 
 
-
-
-
-def main(filename, blacklist):
-    world = mpi4py.MPI.COMM_WORLD
-    size = world.Get_size()
-    rank = world.Get_rank()
-    m = py3shape.i3meds.I3MEDS(filename, blacklist=blacklist)
-    iobjs = np.arange(m.size)
-    iobjs = np.array_split(iobjs, size)[rank]
-    fn = os.path.split(filename)[1]
-    fn='psfs/{0}.{1}.txt'.format(fn, rank)
-    f = open(fn, 'w')
-    for iobj in iobjs:
-        n_image = m.get_cat()['ncutout'][iobj]
-        iexps = m.select_exposures(iobj, options, 1, n_image)
-        for iexp in iexps:
-            img = m.get_bundled_psfex_psf(iobj, iexp, options)
-            psf = py3shape.image.Image(img)
-            mom = psf.weighted_moments(weight_radius=10.)
-            e1 = mom.e1
-            e2 = mom.e2
-            e1_sky, e2_sky = m.convert_g_image2sky(iobj, iexp, options.stamp_size, e1, e2)
-            f.write('%d  %d  %e  %e  %e  %e\n' % (iobj, iexp, e1, e2, e1_sky, e2_sky))
-    f.close()
-    print fn, 'complete'
-
-if __name__=="__main__":
-    for line in open('spt-e-gold-r-v1.txt'):
-        line = line.strip()
-        main(line, 'blacklist-y1.txt')
+if __name__ == '__main__':
+    args = {'ini':'psf.ini', 'list':'meds.txt'}
+    debug_mpi = True
+    PSFProcess.main_loop(debug_mpi, args)

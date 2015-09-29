@@ -44,11 +44,21 @@ class MPIProcess(object):
 
 
 	#Main method you call from application:
+
 	@classmethod
-	def main_loop(cls, comm, debug_mpi, args):
+	def main_loop(cls, debug_mpi, args, comm=None):
+		if comm is None:
+			comm = cls.get_world()
 		proc = cls(comm, debug_mpi, args)
 		proc.run()
 
+
+
+	@staticmethod
+	def get_world(): #not enough!
+		import mpi4py.MPI
+		world = mpi4py.MPI.COMM_WORLD
+		return world
 
 
 
