@@ -43,8 +43,8 @@ class PSFProcess(MPIProcess):
                 e1 = mom.e1
                 e2 = mom.e2
                 e1_sky, e2_sky = m.convert_g_image2sky(iobj, iexp, options.stamp_size, e1, e2)
-
-                results.append((iobj, e1, e2, e1_sky, e2_sky))
+                ID = cat['id'][iobj]
+                results.append((ID, e1, e2, e1_sky, e2_sky))
         return results
 
     def write_output(self, results):
