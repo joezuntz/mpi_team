@@ -45,6 +45,7 @@ class PSFProcess(MPIProcess):
             tile = find_tilename(meds_file)
             completed_already = set(find_completed(tile))
             iobjs = [i for i in iobjs if IDs[i] not in completed_already]
+            print "%d of %d objects left for %s" % (len(objs), m.size, meds_file)
 
             chunks = np.array_split(iobjs, len(iobjs)//10)
             for chunk in chunks:
