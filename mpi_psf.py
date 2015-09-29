@@ -21,18 +21,31 @@ def find_tilename(name):
 
 
 class PSFProcess(MPIProcess):
-    def find_completed(self):
-
+    def find_completed(self, tile):
+        cursor = self.connection.cursor()
+        sql = "select coadd_objects_id from spteg_psf where tile=%s"
+        cursor.execute(sql, tile)
+        results = [x[0] for x in cursor.fetchall()]
+        print "Found %d results already for tile %s" % (len(results), tile)
+        self.connection.commit()
+        cursor.close()
+        return results
 
     #Functions you must overwrite
     def make_tasks(self):
         results = []
-        completed_already = sel
         meds_files = [line.strip() for line in open(self.meds_list) if line.strip() and not line.strip().startswith('#')]
 
         for meds_file in meds_files:
             m = py3shape.i3meds.I3MEDS(meds_file, blacklist=self.options.blacklist)
+
             iobjs = np.arange(m.size)
+            IDs = m.get_cat()['id']
+
+            tile = find_tilename(meds_file)
+            completed_already = set(find_completed(tile))
+            iobjs = [i for i in iobjs if IDs[i] not in completed_already]
+
             chunks = np.array_split(iobjs, len(iobjs)//10)
             for chunk in chunks:
                 results.append((meds_file, chunk))
