@@ -6,6 +6,7 @@ import os
 import numpy as np
 import desnerscdb
 
+from mpi_master_slave import MPIProcess
 
 
 class PSFProcess(MPIProcess):
